@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 import { useUI } from "../contexts/UIContext";
 import { FASES_LEAD, FM_FASE, FUENTES_LEAD, URGENCIAS, TIPOS_INMUEBLE, OPERACIONES_LEAD, ACCIONES_SEGUIMIENTO } from "../lib/constants";
 import { fmt, fmtDate, toLeadRow, calcularMatch } from "../lib/helpers";
-import { Card, Badge, Btn, Input, Select, Textarea, Modal, PillSelect, TagInput, Spinner } from "../components/ui";
+import { Card, Badge, Btn, Input, Select, Textarea, Modal, PillSelect, TagInput, Spinner, Icon } from "../components/ui";
 
 const emptyLead = () => ({
   nombre: "", telefono: "", email: "", fuente: "otro", fase: "nuevo",
@@ -317,7 +317,7 @@ export const Leads = ({ leads, inmuebles, agentes, agenteActualId, onChange, onM
 
             {activeTab === "matches" && (
               <div className="space-y-3">
-                <Btn onClick={buscarMatches} size="sm">🔍 Buscar inmuebles que hagan match</Btn>
+                <Btn onClick={buscarMatches} size="sm"><Icon name="search" size={14} /> Buscar inmuebles que hagan match</Btn>
                 {matchResults === null ? (
                   <div className="text-center text-slate-400 py-8 text-sm">Presiona el botón para calcular matches contra el inventario disponible.</div>
                 ) : matchResults.length === 0 ? (

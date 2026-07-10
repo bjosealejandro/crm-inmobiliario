@@ -10,15 +10,15 @@ import { Inmuebles } from "./pages/Inmuebles";
 import { Matches } from "./pages/Matches";
 import { Agentes } from "./pages/Agentes";
 import { Configuracion } from "./pages/Configuracion";
-import { Spinner } from "./components/ui";
+import { Spinner, Icon } from "./components/ui";
 
 const NAV = [
-  { id: "dashboard",  label: "Dashboard",     icon: "📊", roles: [ROL_ADMIN, ROL_AGENTE] },
-  { id: "leads",      label: "Leads",         icon: "👤", roles: [ROL_ADMIN, ROL_AGENTE] },
-  { id: "inmuebles",  label: "Inmuebles",     icon: "🏠", roles: [ROL_ADMIN, ROL_AGENTE] },
-  { id: "matches",    label: "Matches",       icon: "🔗", roles: [ROL_ADMIN, ROL_AGENTE] },
-  { id: "agentes",    label: "Agentes",       icon: "🧑‍💼", roles: [ROL_ADMIN] },
-  { id: "config",     label: "Configuración", icon: "⚙️", roles: [ROL_ADMIN] },
+  { id: "dashboard",  label: "Dashboard",     icon: "dashboard", roles: [ROL_ADMIN, ROL_AGENTE] },
+  { id: "leads",      label: "Leads",         icon: "user",      roles: [ROL_ADMIN, ROL_AGENTE] },
+  { id: "inmuebles",  label: "Inmuebles",     icon: "home",      roles: [ROL_ADMIN, ROL_AGENTE] },
+  { id: "matches",    label: "Matches",       icon: "link",      roles: [ROL_ADMIN, ROL_AGENTE] },
+  { id: "agentes",    label: "Agentes",       icon: "users",     roles: [ROL_ADMIN] },
+  { id: "config",     label: "Configuración", icon: "settings",  roles: [ROL_ADMIN] },
 ];
 
 function AppShell() {
@@ -132,7 +132,7 @@ function AppShell() {
           {navVisible.map(n => (
             <button key={n.id} onClick={() => { setPage(n.id); if (isMobile) setSidebarOpen(false); }}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${page === n.id ? "bg-emerald-800 text-white" : "text-emerald-100/80 hover:bg-emerald-900"}`}>
-              <span>{n.icon}</span>{n.label}
+              <Icon name={n.icon} size={16} />{n.label}
             </button>
           ))}
         </div>
@@ -155,7 +155,7 @@ function AppShell() {
       <div className="flex-1 flex flex-col min-w-0">
         <div className="h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-3 shrink-0">
           {isMobile && (
-            <button onClick={() => setSidebarOpen(o => !o)} className="text-emerald-800 p-1">☰</button>
+            <button onClick={() => setSidebarOpen(o => !o)} className="text-emerald-800 p-1"><Icon name="menu" size={20} /></button>
           )}
           <div className="font-semibold text-slate-700 text-sm capitalize">{NAV.find(n => n.id === page)?.label}</div>
         </div>

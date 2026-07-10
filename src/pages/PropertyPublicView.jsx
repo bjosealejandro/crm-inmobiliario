@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { FM_TIPO_INMUEBLE, FM_ESTADO_INMUEBLE } from "../lib/constants";
 import { fmt, fmtArea, mapInmueble } from "../lib/helpers";
-import { Carousel, Spinner } from "../components/ui";
+import { Carousel, Spinner, MapEmbed } from "../components/ui";
 
 export const PropertyPublicView = () => {
   const { id } = useParams();
@@ -53,7 +53,7 @@ export const PropertyPublicView = () => {
             {inmueble.operacion === "venta" ? "Venta" : "Arriendo"} · {FM_TIPO_INMUEBLE[inmueble.tipo]?.label} · {inmueble.ciudad}{inmueble.zona ? ` · ${inmueble.zona}` : ""}
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center mb-5">
+          <div className="grid grid-cols-3 gap-3 text-center mb-3">
             <div className="bg-slate-50 rounded-lg py-3">
               <div className="text-lg font-bold text-slate-700">{inmueble.habitaciones ?? "—"}</div>
               <div className="text-[11px] text-slate-400 uppercase">Habitaciones</div>
@@ -68,8 +68,25 @@ export const PropertyPublicView = () => {
             </div>
           </div>
 
+          {(inmueble.pisos || inmueble.antiguedadAnios || inmueble.materialPiso || inmueble.estrato) && (
+            <div className="grid grid-cols-2 gap-2 text-sm text-slate-600 mb-5">
+              {inmueble.pisos && <div><span className="text-slate-400">Pisos:</span> {inmueble.pisos}</div>}
+              {inmueble.antiguedadAnios != null && <div><span className="text-slate-400">Antigüedad:</span> {inmueble.antiguedadAnios} años</div>}
+              {inmueble.materialPiso && <div><span className="text-slate-400">Piso:</span> {inmueble.materialPiso}</div>}
+              {inmueble.estrato && <div><span className="text-slate-400">Estrato:</span> {inmueble.estrato}</div>}
+            </div>
+          )}
+
           {inmueble.descripcion && (
             <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line mb-5">{inmueble.descripcion}</p>
+          )}
+
+          {(inmueble.direccion || inmueble.zona) && (
+            <div className="mb-5">
+              <div className="text-xs text-slate-400 uppercase font-semibold mb-2">Ubicación</div>
+              <div className="text-sm text-slate-600 mb-2">{inmueble.direccion}{inmueble.zona ? `, ${inmueble.zona}` : ""}, {inmueble.ciudad}</div>
+              <MapEmbed direccion={inmueble.direccion} zona={inmueble.zona} ciudad={inmueble.ciudad} className="w-full h-56 rounded-xl" />
+            </div>
           )}
 
           {agente && (

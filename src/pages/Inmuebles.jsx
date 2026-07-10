@@ -4,12 +4,13 @@ import { supabase } from "../lib/supabase";
 import { useUI } from "../contexts/UIContext";
 import { TIPOS_INMUEBLE, FM_TIPO_INMUEBLE, OPERACIONES, ESTADOS_INMUEBLE, FM_ESTADO_INMUEBLE, FUENTES_INMUEBLE } from "../lib/constants";
 import { fmt, fmtArea, toInmuebleRow } from "../lib/helpers";
-import { Card, Badge, Btn, Input, Select, Textarea, Modal, ImageUploader } from "../components/ui";
+import { Card, Badge, Btn, Input, Select, Textarea, Modal, ImageUploader, Icon, MapEmbed } from "../components/ui";
 
 const emptyInmueble = () => ({
   titulo: "", descripcion: "", tipo: "apartamento", operacion: "venta", precio: "",
   area: "", habitaciones: "", banos: "", parqueaderos: "", estrato: "",
-  ciudad: "", zona: "", direccion: "", estado: "disponible", destacado: false, imagenes: [],
+  pisos: "", antiguedadAnios: "", materialPiso: "",
+  ciudad: "Tocancipá", zona: "", direccion: "", estado: "disponible", destacado: false, imagenes: [],
 });
 
 export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
@@ -56,7 +57,8 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
     const dbField = { titulo: "titulo", descripcion: "descripcion", tipo: "tipo", operacion: "operacion",
       precio: "precio", area: "area", habitaciones: "habitaciones", banos: "banos", parqueaderos: "parqueaderos",
       estrato: "estrato", ciudad: "ciudad", zona: "zona", direccion: "direccion", estado: "estado",
-      destacado: "destacado" }[field] || field;
+      destacado: "destacado", pisos: "pisos", antiguedadAnios: "antiguedad_anios", materialPiso: "material_piso",
+    }[field] || field;
     await supabase.from("inmuebles").update({ [dbField]: value }).eq("id", id);
     await onChange?.();
   };
@@ -181,7 +183,7 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
           return (
             <Card key={i.id} className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => setDetalle(i)}>
               <div className="aspect-video bg-slate-100 flex items-center justify-center text-slate-300 text-4xl overflow-hidden">
-                {i.imagenes?.[0] ? <img src={i.imagenes[0]} alt="" className="w-full h-full object-cover" /> : "🏠"}
+                {i.imagenes?.[0] ? <img src={i.imagenes[0]} alt="" className="w-full h-full object-cover" /> : <Icon name="home" size={36} className="text-slate-300" />}
               </div>
               <div className="p-4">
                 <div className="flex justify-between items-start gap-2 mb-2">
@@ -218,6 +220,9 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
           <Input label="Baños" type="number" value={nuevo.banos} onChange={e => setNuevo(p => ({ ...p, banos: e.target.value }))} />
           <Input label="Parqueaderos" type="number" value={nuevo.parqueaderos} onChange={e => setNuevo(p => ({ ...p, parqueaderos: e.target.value }))} />
           <Input label="Estrato" type="number" value={nuevo.estrato} onChange={e => setNuevo(p => ({ ...p, estrato: e.target.value }))} />
+          <Input label="Pisos" type="number" value={nuevo.pisos} onChange={e => setNuevo(p => ({ ...p, pisos: e.target.value }))} />
+          <Input label="Antigüedad (años)" type="number" value={nuevo.antiguedadAnios} onChange={e => setNuevo(p => ({ ...p, antiguedadAnios: e.target.value }))} />
+          <Input label="Material de piso" className="col-span-2" value={nuevo.materialPiso} onChange={e => setNuevo(p => ({ ...p, materialPiso: e.target.value }))} placeholder="Ej: madera, porcelanato..." />
           <Input label="Ciudad" value={nuevo.ciudad} onChange={e => setNuevo(p => ({ ...p, ciudad: e.target.value }))} />
           <Input label="Zona/Barrio" value={nuevo.zona} onChange={e => setNuevo(p => ({ ...p, zona: e.target.value }))} />
           <Input label="Dirección" className="col-span-2" value={nuevo.direccion} onChange={e => setNuevo(p => ({ ...p, direccion: e.target.value }))} />
@@ -255,10 +260,21 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
               <Input label="Área (m²)" type="number" defaultValue={detalle.area} onBlur={e => actualizarCampo(detalle.id, "area", Number(e.target.value) || null)} />
               <Input label="Habitaciones" type="number" defaultValue={detalle.habitaciones} onBlur={e => actualizarCampo(detalle.id, "habitaciones", Number(e.target.value) || null)} />
               <Input label="Baños" type="number" defaultValue={detalle.banos} onBlur={e => actualizarCampo(detalle.id, "banos", Number(e.target.value) || null)} />
-              <Input label="Ciudad" defaultValue={detalle.ciudad} onBlur={e => actualizarCampo(detalle.id, "ciudad", e.target.value)} />
-              <Input label="Zona" defaultValue={detalle.zona} onBlur={e => actualizarCampo(detalle.id, "zona", e.target.value)} />
+              <Input label="Estrato" type="number" defaultValue={detalle.estrato} onBlur={e => actualizarCampo(detalle.id, "estrato", Number(e.target.value) || null)} />
+              <Input label="Pisos" type="number" defaultValue={detalle.pisos} onBlur={e => actualizarCampo(detalle.id, "pisos", Number(e.target.value) || null)} />
+              <Input label="Antigüedad (años)" type="number" defaultValue={detalle.antiguedadAnios} onBlur={e => actualizarCampo(detalle.id, "antiguedadAnios", Number(e.target.value) || null)} />
+              <Input label="Material de piso" defaultValue={detalle.materialPiso} onBlur={e => actualizarCampo(detalle.id, "materialPiso", e.target.value)} />
+              <Input label="Ciudad" defaultValue={detalle.ciudad} onBlur={e => { actualizarCampo(detalle.id, "ciudad", e.target.value); setDetalle(d => ({ ...d, ciudad: e.target.value })); }} />
+              <Input label="Zona" defaultValue={detalle.zona} onBlur={e => { actualizarCampo(detalle.id, "zona", e.target.value); setDetalle(d => ({ ...d, zona: e.target.value })); }} />
+              <Input label="Dirección" className="col-span-2" defaultValue={detalle.direccion} onBlur={e => { actualizarCampo(detalle.id, "direccion", e.target.value); setDetalle(d => ({ ...d, direccion: e.target.value })); }} />
             </div>
             <Textarea label="Descripción" rows={3} defaultValue={detalle.descripcion} onBlur={e => actualizarCampo(detalle.id, "descripcion", e.target.value)} />
+            {(detalle.direccion || detalle.zona) && (
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Ubicación</label>
+                <MapEmbed direccion={detalle.direccion} zona={detalle.zona} ciudad={detalle.ciudad} className="w-full h-48 rounded-lg" />
+              </div>
+            )}
             <Btn variant="danger" size="sm" onClick={eliminarInmueble}>Eliminar inmueble</Btn>
           </div>
         )}

@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { Icon } from "./Icon";
 
 export const Carousel = ({ imagenes = [], className = "" }) => {
   const [idx, setIdx] = useState(0);
   if (!imagenes.length) {
     return (
-      <div className={`bg-slate-100 flex items-center justify-center text-slate-300 text-5xl ${className}`}>
-        🏠
+      <div className={`bg-slate-100 flex items-center justify-center text-slate-300 ${className}`}>
+        <Icon name="home" size={56} />
       </div>
     );
   }

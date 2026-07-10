@@ -1,5 +1,5 @@
 import { FASES_LEAD, ESTADOS_INMUEBLE } from "../lib/constants";
-import { Card, Badge } from "../components/ui";
+import { Card, Badge, Icon } from "../components/ui";
 
 const TEXT_COLOR = {
   emerald: "text-emerald-700", blue: "text-blue-700", violet: "text-violet-700", green: "text-green-700",
@@ -35,7 +35,7 @@ export const Dashboard = ({ leads, inmuebles, matches, userName, onNav }) => {
   return (
     <div className="space-y-6">
       <div>
-        <div className="text-xl font-bold text-slate-800">Hola, {userName?.split(" ")[0] || "agente"} 👋</div>
+        <div className="text-xl font-bold text-slate-800">Hola, {userName?.split(" ")[0] || "agente"}</div>
         <div className="text-sm text-slate-400">Resumen general del CRM inmobiliario</div>
       </div>
 
@@ -48,8 +48,9 @@ export const Dashboard = ({ leads, inmuebles, matches, userName, onNav }) => {
 
       {alertasHoy.length > 0 && (
         <Card className="p-4 border-amber-200 bg-amber-50">
-          <div className="font-semibold text-amber-800 text-sm">
-            🔔 {alertasHoy.length} lead{alertasHoy.length !== 1 ? "s" : ""} con seguimiento pendiente para hoy o antes
+          <div className="font-semibold text-amber-800 text-sm flex items-center gap-2">
+            <Icon name="bell" size={16} />
+            {alertasHoy.length} lead{alertasHoy.length !== 1 ? "s" : ""} con seguimiento pendiente para hoy o antes
           </div>
           <button onClick={() => onNav("leads")} className="text-amber-700 text-xs font-semibold underline mt-1">Ver leads</button>
         </Card>

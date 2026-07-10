@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { COMPANY } from "../lib/constants";
-import { Card, Input, Btn } from "../components/ui";
+import { Card, Input, Btn, Icon } from "../components/ui";
 
 export const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
@@ -22,8 +22,8 @@ export const Login = ({ onLogin }) => {
     <div className="min-h-screen bg-emerald-900 flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-emerald-800 text-2xl font-black mb-4">
-            🏠
+          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center text-emerald-800 mb-4">
+            <Icon name="home" size={30} />
           </div>
           <h1 className="text-white text-xl font-bold text-center">{COMPANY.name}</h1>
         </div>
