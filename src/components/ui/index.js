@@ -8,3 +8,5 @@ export { Spinner }  from "./Spinner";
 export { Toggle }   from "./Toggle";
 export { Modal }    from "./Modal";
 export { PillSelect, TagInput } from "./PillSelect";
+export { ImageUploader } from "./ImageUploader";
+export { Carousel } from "./Carousel";

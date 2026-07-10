@@ -4,12 +4,12 @@ import { supabase } from "../lib/supabase";
 import { useUI } from "../contexts/UIContext";
 import { TIPOS_INMUEBLE, FM_TIPO_INMUEBLE, OPERACIONES, ESTADOS_INMUEBLE, FM_ESTADO_INMUEBLE, FUENTES_INMUEBLE } from "../lib/constants";
 import { fmt, fmtArea, toInmuebleRow } from "../lib/helpers";
-import { Card, Badge, Btn, Input, Select, Textarea, Modal } from "../components/ui";
+import { Card, Badge, Btn, Input, Select, Textarea, Modal, ImageUploader } from "../components/ui";
 
 const emptyInmueble = () => ({
   titulo: "", descripcion: "", tipo: "apartamento", operacion: "venta", precio: "",
   area: "", habitaciones: "", banos: "", parqueaderos: "", estrato: "",
-  ciudad: "", zona: "", direccion: "", estado: "disponible", destacado: false,
+  ciudad: "", zona: "", direccion: "", estado: "disponible", destacado: false, imagenes: [],
 });
 
 export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
@@ -179,18 +179,23 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
         ) : filtrados.map(i => {
           const estado = FM_ESTADO_INMUEBLE[i.estado];
           return (
-            <Card key={i.id} className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setDetalle(i)}>
-              <div className="flex justify-between items-start gap-2 mb-2">
-                <div className="font-semibold text-slate-800 text-sm leading-snug">{i.titulo}</div>
-                <Badge color={estado?.color}>{estado?.label}</Badge>
+            <Card key={i.id} className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => setDetalle(i)}>
+              <div className="aspect-video bg-slate-100 flex items-center justify-center text-slate-300 text-4xl overflow-hidden">
+                {i.imagenes?.[0] ? <img src={i.imagenes[0]} alt="" className="w-full h-full object-cover" /> : "🏠"}
               </div>
-              <div className="text-lg font-bold text-emerald-700">{fmt(i.precio)}</div>
-              <div className="text-xs text-slate-400 mb-2">{i.operacion === "venta" ? "Venta" : "Arriendo"} · {FM_TIPO_INMUEBLE[i.tipo]?.label}</div>
-              <div className="text-xs text-slate-500">{i.ciudad}{i.zona ? ` · ${i.zona}` : ""}</div>
-              <div className="flex gap-3 text-xs text-slate-400 mt-2">
-                {i.habitaciones != null && <span>{i.habitaciones} hab</span>}
-                {i.banos != null && <span>{i.banos} baños</span>}
-                {i.area != null && <span>{fmtArea(i.area)}</span>}
+              <div className="p-4">
+                <div className="flex justify-between items-start gap-2 mb-2">
+                  <div className="font-semibold text-slate-800 text-sm leading-snug">{i.titulo}</div>
+                  <Badge color={estado?.color}>{estado?.label}</Badge>
+                </div>
+                <div className="text-lg font-bold text-emerald-700">{fmt(i.precio)}</div>
+                <div className="text-xs text-slate-400 mb-2">{i.operacion === "venta" ? "Venta" : "Arriendo"} · {FM_TIPO_INMUEBLE[i.tipo]?.label}</div>
+                <div className="text-xs text-slate-500">{i.ciudad}{i.zona ? ` · ${i.zona}` : ""}</div>
+                <div className="flex gap-3 text-xs text-slate-400 mt-2">
+                  {i.habitaciones != null && <span>{i.habitaciones} hab</span>}
+                  {i.banos != null && <span>{i.banos} baños</span>}
+                  {i.area != null && <span>{fmtArea(i.area)}</span>}
+                </div>
               </div>
             </Card>
           );
@@ -199,6 +204,10 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
 
       {/* Modal nuevo inmueble */}
       <Modal open={showNuevo} onClose={() => setShowNuevo(false)} title="Nuevo inmueble">
+        <div className="mb-4">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Fotos</label>
+          <ImageUploader imagenes={nuevo.imagenes} onChange={v => setNuevo(p => ({ ...p, imagenes: v }))} />
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Título *" className="col-span-2" value={nuevo.titulo} onChange={e => setNuevo(p => ({ ...p, titulo: e.target.value }))} />
           <Select label="Tipo" options={TIPOS_INMUEBLE} value={nuevo.tipo} onChange={e => setNuevo(p => ({ ...p, tipo: e.target.value }))} />
@@ -225,6 +234,18 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
         subtitle={detalle && `Fuente: ${FUENTES_INMUEBLE.find(f => f.id === detalle.fuente)?.label || detalle.fuente}`}>
         {detalle && (
           <div className="space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Fotos</label>
+              <ImageUploader imagenes={detalle.imagenes || []} onChange={v => { actualizarCampo(detalle.id, "imagenes", v); setDetalle(d => ({ ...d, imagenes: v })); }} />
+            </div>
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
+              <span className="text-xs text-slate-500 flex-1 truncate">{window.location.origin}/inmueble/{detalle.id}</span>
+              <Btn size="sm" variant="secondary" onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/inmueble/${detalle.id}`);
+                showToast("Link copiado", "success");
+              }}>Copiar link</Btn>
+              <a href={`/inmueble/${detalle.id}`} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-emerald-700 whitespace-nowrap">Ver visor ↗</a>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <Input label="Título" defaultValue={detalle.titulo} onBlur={e => actualizarCampo(detalle.id, "titulo", e.target.value)} />
               <Select label="Estado" options={ESTADOS_INMUEBLE} value={detalle.estado} onChange={e => { actualizarCampo(detalle.id, "estado", e.target.value); setDetalle(d => ({ ...d, estado: e.target.value })); }} />
