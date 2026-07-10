@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { useUI } from "../contexts/UIContext";
-import { Card, Badge, Textarea, Btn } from "../components/ui";
+import { Card, Badge, Textarea, Btn, Toggle } from "../components/ui";
 
 const ESTADO_COLOR = { pendiente: "amber", activa: "green", inactiva: "slate" };
 
@@ -10,9 +10,14 @@ export const Configuracion = () => {
   const [fuentes, setFuentes] = useState([]);
   const [editando, setEditando] = useState(null);
   const [notaTmp, setNotaTmp] = useState("");
+  const [inmuebles, setInmuebles] = useState([]);
+
+  const cargarInmuebles = () =>
+    supabase.from("inmuebles").select("*").order("titulo").then(({ data }) => { if (data) setInmuebles(data); });
 
   useEffect(() => {
     supabase.from("fuentes_externas").select("*").order("nombre").then(({ data }) => { if (data) setFuentes(data); });
+    cargarInmuebles();
   }, []);
 
   const cambiarEstado = async (f, estado) => {
@@ -26,6 +31,21 @@ export const Configuracion = () => {
     setEditando(null);
     showToast("Nota guardada", "success");
   };
+
+  const toggleActivo = async (inm) => {
+    const activo = inm.estado !== "inactivo";
+    const nuevoEstado = activo ? "inactivo" : "disponible";
+    await supabase.from("inmuebles").update({ estado: nuevoEstado }).eq("id", inm.id);
+    setInmuebles(prev => prev.map(x => x.id === inm.id ? { ...x, estado: nuevoEstado } : x));
+  };
+
+  const redesDe = (inm) => [
+    inm.instagram_url && "Instagram",
+    inm.facebook_url && "Facebook",
+    inm.fincaraiz_url && "Fincaraíz",
+    inm.metrocuadrado_url && "Metrocuadrado",
+    (inm.habi_url || inm.habi_id) && "Habi",
+  ].filter(Boolean);
 
   return (
     <div className="space-y-4 max-w-2xl">
@@ -68,6 +88,38 @@ export const Configuracion = () => {
         <div className="font-semibold text-slate-700 text-sm mb-1">¿Cómo cargar inventario mientras no hay API?</div>
         <div className="text-sm text-slate-500">Usa el botón "Importar" en la página de Inmuebles para cargar un Excel/CSV con el inventario. Cuando tengas acceso de partner/API de una fuente, avísame para construir el conector automático.</div>
       </Card>
+
+      <div className="pt-4">
+        <div className="text-lg font-bold text-slate-800">Inmuebles publicados</div>
+        <div className="text-sm text-slate-400 mb-3">Apaga un inmueble para que deje de verse en el visor público, sin borrarlo.</div>
+        <Card className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-slate-50 text-left text-[11px] uppercase text-slate-400 font-semibold">
+                <th className="px-4 py-3">Inmueble</th>
+                <th className="px-4 py-3">Redes/portales</th>
+                <th className="px-4 py-3">Activo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inmuebles.length === 0 ? (
+                <tr><td colSpan={3} className="text-center py-8 text-slate-400">Sin inmuebles todavía.</td></tr>
+              ) : inmuebles.map(inm => (
+                <tr key={inm.id} className="border-t border-slate-100">
+                  <td className="px-4 py-3 font-semibold text-slate-700">{inm.titulo}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {redesDe(inm).length === 0 ? <span className="text-slate-300 text-xs">—</span> :
+                        redesDe(inm).map(r => <Badge key={r} color="slate">{r}</Badge>)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3"><Toggle activo={inm.estado !== "inactivo"} onChange={() => toggleActivo(inm)} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
     </div>
   );
 };

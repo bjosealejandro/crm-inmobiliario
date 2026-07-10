@@ -9,6 +9,7 @@ export { Toggle }   from "./Toggle";
 export { Modal }    from "./Modal";
 export { PillSelect, TagInput } from "./PillSelect";
 export { ImageUploader } from "./ImageUploader";
+export { VideoUploader } from "./VideoUploader";
 export { Carousel } from "./Carousel";
 export { Icon } from "./Icon";
 export { MapEmbed } from "./MapEmbed";

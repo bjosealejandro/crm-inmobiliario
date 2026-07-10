@@ -49,7 +49,10 @@ export const mapInmueble = (i) => ({
   habitaciones: i.habitaciones, banos: i.banos, parqueaderos: i.parqueaderos,
   estrato: i.estrato, ciudad: i.ciudad, zona: i.zona, direccion: i.direccion,
   pisos: i.pisos, antiguedadAnios: i.antiguedad_anios, materialPiso: i.material_piso,
-  imagenes: i.imagenes || [], amenities: i.amenities || [],
+  imagenes: i.imagenes || [], videos: i.videos || [], amenities: i.amenities || [],
+  instagramUrl: i.instagram_url, facebookUrl: i.facebook_url,
+  fincaraizUrl: i.fincaraiz_url, metrocuadradoUrl: i.metrocuadrado_url,
+  habiId: i.habi_id, habiUrl: i.habi_url,
   estado: i.estado, fuente: i.fuente, fuenteId: i.fuente_id,
   agenteId: i.agente_id, destacado: i.destacado, createdAt: i.created_at,
 });
@@ -60,7 +63,10 @@ export const toInmuebleRow = (i) => ({
   habitaciones: i.habitaciones || null, banos: i.banos || null, parqueaderos: i.parqueaderos || null,
   estrato: i.estrato || null, ciudad: i.ciudad || "", zona: i.zona || "", direccion: i.direccion || "",
   pisos: i.pisos || null, antiguedad_anios: i.antiguedadAnios || null, material_piso: i.materialPiso || "",
-  imagenes: i.imagenes || [], amenities: i.amenities || [],
+  imagenes: i.imagenes || [], videos: i.videos || [], amenities: i.amenities || [],
+  instagram_url: i.instagramUrl || "", facebook_url: i.facebookUrl || "",
+  fincaraiz_url: i.fincaraizUrl || "", metrocuadrado_url: i.metrocuadradoUrl || "",
+  habi_id: i.habiId || "", habi_url: i.habiUrl || "",
   estado: i.estado || "disponible", fuente: i.fuente || "manual", fuente_id: i.fuenteId || null,
   agente_id: i.agenteId || null, destacado: i.destacado || false,
 });

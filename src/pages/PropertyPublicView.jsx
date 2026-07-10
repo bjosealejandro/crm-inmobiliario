@@ -81,11 +81,35 @@ export const PropertyPublicView = () => {
             <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line mb-5">{inmueble.descripcion}</p>
           )}
 
+          {inmueble.videos?.length > 0 && (
+            <div className="mb-5">
+              <div className="text-xs text-slate-400 uppercase font-semibold mb-2">Videos</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {inmueble.videos.map(url => (
+                  <video key={url} src={url} controls className="w-full rounded-lg bg-black" />
+                ))}
+              </div>
+            </div>
+          )}
+
           {(inmueble.direccion || inmueble.zona) && (
             <div className="mb-5">
               <div className="text-xs text-slate-400 uppercase font-semibold mb-2">Ubicación</div>
               <div className="text-sm text-slate-600 mb-2">{inmueble.direccion}{inmueble.zona ? `, ${inmueble.zona}` : ""}, {inmueble.ciudad}</div>
               <MapEmbed direccion={inmueble.direccion} zona={inmueble.zona} ciudad={inmueble.ciudad} className="w-full h-56 rounded-xl" />
+            </div>
+          )}
+
+          {(inmueble.instagramUrl || inmueble.facebookUrl || inmueble.fincaraizUrl || inmueble.metrocuadradoUrl || inmueble.habiUrl) && (
+            <div className="mb-5">
+              <div className="text-xs text-slate-400 uppercase font-semibold mb-2">También publicado en</div>
+              <div className="flex flex-wrap gap-2">
+                {inmueble.instagramUrl && <a href={inmueble.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Instagram</a>}
+                {inmueble.facebookUrl && <a href={inmueble.facebookUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Facebook</a>}
+                {inmueble.fincaraizUrl && <a href={inmueble.fincaraizUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Fincaraíz</a>}
+                {inmueble.metrocuadradoUrl && <a href={inmueble.metrocuadradoUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Metrocuadrado</a>}
+                {inmueble.habiUrl && <a href={inmueble.habiUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">Habi</a>}
+              </div>
             </div>
           )}
 

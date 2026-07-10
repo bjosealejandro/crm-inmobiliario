@@ -4,13 +4,15 @@ import { supabase } from "../lib/supabase";
 import { useUI } from "../contexts/UIContext";
 import { TIPOS_INMUEBLE, FM_TIPO_INMUEBLE, OPERACIONES, ESTADOS_INMUEBLE, FM_ESTADO_INMUEBLE, FUENTES_INMUEBLE } from "../lib/constants";
 import { fmt, fmtArea, toInmuebleRow } from "../lib/helpers";
-import { Card, Badge, Btn, Input, Select, Textarea, Modal, ImageUploader, Icon, MapEmbed } from "../components/ui";
+import { Card, Badge, Btn, Input, Select, Textarea, Modal, ImageUploader, VideoUploader, Icon, MapEmbed } from "../components/ui";
 
 const emptyInmueble = () => ({
   titulo: "", descripcion: "", tipo: "apartamento", operacion: "venta", precio: "",
   area: "", habitaciones: "", banos: "", parqueaderos: "", estrato: "",
   pisos: "", antiguedadAnios: "", materialPiso: "",
-  ciudad: "Tocancipá", zona: "", direccion: "", estado: "disponible", destacado: false, imagenes: [],
+  ciudad: "Tocancipá", zona: "", direccion: "", estado: "disponible", destacado: false,
+  imagenes: [], videos: [],
+  instagramUrl: "", facebookUrl: "", fincaraizUrl: "", metrocuadradoUrl: "", habiId: "", habiUrl: "",
 });
 
 export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
@@ -58,6 +60,8 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
       precio: "precio", area: "area", habitaciones: "habitaciones", banos: "banos", parqueaderos: "parqueaderos",
       estrato: "estrato", ciudad: "ciudad", zona: "zona", direccion: "direccion", estado: "estado",
       destacado: "destacado", pisos: "pisos", antiguedadAnios: "antiguedad_anios", materialPiso: "material_piso",
+      videos: "videos", instagramUrl: "instagram_url", facebookUrl: "facebook_url",
+      fincaraizUrl: "fincaraiz_url", metrocuadradoUrl: "metrocuadrado_url", habiId: "habi_id", habiUrl: "habi_url",
     }[field] || field;
     await supabase.from("inmuebles").update({ [dbField]: value }).eq("id", id);
     await onChange?.();
@@ -210,6 +214,10 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
           <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Fotos</label>
           <ImageUploader imagenes={nuevo.imagenes} onChange={v => setNuevo(p => ({ ...p, imagenes: v }))} />
         </div>
+        <div className="mb-4">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Videos</label>
+          <VideoUploader videos={nuevo.videos} onChange={v => setNuevo(p => ({ ...p, videos: v }))} />
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Título *" className="col-span-2" value={nuevo.titulo} onChange={e => setNuevo(p => ({ ...p, titulo: e.target.value }))} />
           <Select label="Tipo" options={TIPOS_INMUEBLE} value={nuevo.tipo} onChange={e => setNuevo(p => ({ ...p, tipo: e.target.value }))} />
@@ -228,6 +236,17 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
           <Input label="Dirección" className="col-span-2" value={nuevo.direccion} onChange={e => setNuevo(p => ({ ...p, direccion: e.target.value }))} />
           <Textarea label="Descripción" className="col-span-2" rows={3} value={nuevo.descripcion} onChange={e => setNuevo(p => ({ ...p, descripcion: e.target.value }))} />
         </div>
+        <div className="mt-4">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 block">Redes y portales externos</label>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="URL Instagram" value={nuevo.instagramUrl} onChange={e => setNuevo(p => ({ ...p, instagramUrl: e.target.value }))} />
+            <Input label="URL Facebook" value={nuevo.facebookUrl} onChange={e => setNuevo(p => ({ ...p, facebookUrl: e.target.value }))} />
+            <Input label="URL Fincaraíz" value={nuevo.fincaraizUrl} onChange={e => setNuevo(p => ({ ...p, fincaraizUrl: e.target.value }))} />
+            <Input label="URL Metrocuadrado" value={nuevo.metrocuadradoUrl} onChange={e => setNuevo(p => ({ ...p, metrocuadradoUrl: e.target.value }))} />
+            <Input label="ID Habi" value={nuevo.habiId} onChange={e => setNuevo(p => ({ ...p, habiId: e.target.value }))} />
+            <Input label="URL Habi" value={nuevo.habiUrl} onChange={e => setNuevo(p => ({ ...p, habiUrl: e.target.value }))} />
+          </div>
+        </div>
         <div className="flex justify-end gap-2 mt-4">
           <Btn variant="secondary" onClick={() => setShowNuevo(false)}>Cancelar</Btn>
           <Btn onClick={crearInmueble} disabled={saving}>{saving ? "Guardando..." : "Crear inmueble"}</Btn>
@@ -242,6 +261,10 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Fotos</label>
               <ImageUploader imagenes={detalle.imagenes || []} onChange={v => { actualizarCampo(detalle.id, "imagenes", v); setDetalle(d => ({ ...d, imagenes: v })); }} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 block">Videos</label>
+              <VideoUploader videos={detalle.videos || []} onChange={v => { actualizarCampo(detalle.id, "videos", v); setDetalle(d => ({ ...d, videos: v })); }} />
             </div>
             <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
               <span className="text-xs text-slate-500 flex-1 truncate">{window.location.origin}/inmueble/{detalle.id}</span>
@@ -275,6 +298,17 @@ export const Inmuebles = ({ inmuebles, agentes, agenteActualId, onChange }) => {
                 <MapEmbed direccion={detalle.direccion} zona={detalle.zona} ciudad={detalle.ciudad} className="w-full h-48 rounded-lg" />
               </div>
             )}
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 block">Redes y portales externos</label>
+              <div className="grid grid-cols-2 gap-3">
+                <Input label="URL Instagram" defaultValue={detalle.instagramUrl} onBlur={e => actualizarCampo(detalle.id, "instagramUrl", e.target.value)} />
+                <Input label="URL Facebook" defaultValue={detalle.facebookUrl} onBlur={e => actualizarCampo(detalle.id, "facebookUrl", e.target.value)} />
+                <Input label="URL Fincaraíz" defaultValue={detalle.fincaraizUrl} onBlur={e => actualizarCampo(detalle.id, "fincaraizUrl", e.target.value)} />
+                <Input label="URL Metrocuadrado" defaultValue={detalle.metrocuadradoUrl} onBlur={e => actualizarCampo(detalle.id, "metrocuadradoUrl", e.target.value)} />
+                <Input label="ID Habi" defaultValue={detalle.habiId} onBlur={e => actualizarCampo(detalle.id, "habiId", e.target.value)} />
+                <Input label="URL Habi" defaultValue={detalle.habiUrl} onBlur={e => actualizarCampo(detalle.id, "habiUrl", e.target.value)} />
+              </div>
+            </div>
             <Btn variant="danger" size="sm" onClick={eliminarInmueble}>Eliminar inmueble</Btn>
           </div>
         )}
