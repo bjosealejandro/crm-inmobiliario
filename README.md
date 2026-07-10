@@ -28,3 +28,5 @@ El esquema vive en `supabase/migrations/`. Aplicar con:
 ```bash
 supabase db push
 ```
+
+Última verificación de despliegue automático: 2026-07-10T14:25:28Z
