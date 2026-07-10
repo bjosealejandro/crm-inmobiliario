@@ -1,16 +1,30 @@
-# React + Vite
+# CRM Inmobiliario
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+CRM para gestión de leads, inventario de inmuebles y match inteligente entre ambos.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+React 19 + Vite + Tailwind CSS v4 + Supabase (Postgres + Auth).
 
-## React Compiler
+## Módulos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Leads**: seguimiento y perfil de búsqueda de clientes (presupuesto, tipo de inmueble, zonas de interés, historial de contacto).
+- **Inmuebles**: inventario con buscador por filtros y carga masiva vía Excel/CSV.
+- **Matches**: cálculo de coincidencias entre el perfil de un lead y el inventario disponible.
+- **Agentes**: administración de usuarios (solo admin).
+- **Configuración**: estado de integraciones con fuentes externas de inventario (Habi, Fincaraíz — ver notas en la app, ninguna tiene API pública de autoservicio todavía).
 
-## Expanding the Oxlint configuration
+## Desarrollo
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install
+npm run dev
+```
+
+## Base de datos
+
+El esquema vive en `supabase/migrations/`. Aplicar con:
+
+```bash
+supabase db push
+```
